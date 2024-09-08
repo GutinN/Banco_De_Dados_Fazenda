@@ -12,7 +12,8 @@ async function criarEstufa() {
     },
     body: JSON.stringify(estufa),
   });
-  alert(await response.text());
+  const mensagem = await response.text()
+  showModal("Sucesso", mensagem);
 }
 
 async function verEstufas() {
@@ -71,11 +72,21 @@ async function listarEstufas() {
 
 async function removerEstufa() {
   const id = document.getElementById("estufaSelect").value;
-  const response = await fetch(`http://localhost:3000/estufa/${id}`, {
-    method: "DELETE",
-  });
-  alert(await response.text());
-  listarEstufas();
+  try {
+    const response = await fetch(`http://localhost:3000/estufa/${id}`, {
+      method: "DELETE",
+    });
+
+    const mensagem = await response.text()
+    if (response.ok) {
+      showModal("Sucesso", mensagem);
+      listarEstufas();
+    } else {
+      showModal("Erro",mensagem)
+    }
+  } catch (error){
+    showModal("Erro", `Erro na requisição: ${error.message}`)
+  }
 }
 
 // Função para atualizar as informações da Estufa
@@ -103,10 +114,10 @@ async function atualizarEstufa() {
     }
 
     const resultado = await response.json();
-    const mensagem = resultado[0]?.Mensagem || "Erro ao atualizar a estufa.";
-    alert(mensagem);
+    
+    showModal("Sucesso",`A estufa com o ID:${idEstufa} foi atualizada com sucesso!`);
   } catch (error) {
-    alert(error.message);
+    showModal("Erro",`Ocorreu um erro ao tentar atualizar a estufa: ${error.message}`);
   }
 }
 

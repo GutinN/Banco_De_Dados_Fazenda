@@ -10,7 +10,8 @@ async function criarLote() {
     },
     body: JSON.stringify(lote),
   });
-  alert(await response.text());
+  const mensagem = await response.text()
+  showModal("Sucesso", mensagem);
 }
 
 async function verLotes() {
@@ -69,11 +70,21 @@ async function listarLotes() {
 
 async function removerLote() {
   const id = document.getElementById("loteSelect").value;
-  const response = await fetch(`http://localhost:3000/lote/${id}`, {
-    method: "DELETE",
-  });
-  alert(await response.text());
-  listarLotes();
+  try {
+    const response = await fetch(`http://localhost:3000/lote/${id}`, {
+      method: "DELETE",
+    });
+
+    const mensagem = await response.text()
+    if (response.ok) {
+      showModal("Sucesso", mensagem);
+      listarLotes();
+    } else {
+      showModal("Erro",mensagem)
+    }
+  } catch (error){
+    showModal("Erro", `Erro na requisição: ${error.message}`)
+  }
 }
 
 // Função para atualizar as informações do Lote
@@ -99,10 +110,10 @@ async function atualizarLote() {
     }
 
     const resultado = await response.json();
-    const mensagem = resultado[0]?.Mensagem || "Erro ao atualizar o lote.";
-    alert(mensagem);
+
+    showModal("Sucesso",`O lote com o ID:${idLote} foi atualizado com sucesso!`);
   } catch (error) {
-    alert(error.message);
+    showModal("Erro",`Ocorreu um erro ao tentar atualizar o lote: ${error.message}`);
   }
 }
 
